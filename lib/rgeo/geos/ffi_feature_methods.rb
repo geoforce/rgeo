@@ -170,6 +170,18 @@ module RGeo
         @fg_geom.simple?
       end
 
+      def is_valid?
+        @fg_geom.valid?
+      end
+
+      def is_valid_reason?
+        @fg_geom.is_valid_reason
+      end
+
+      def is_valid_detail
+        @fg_geom.is_valid_detail
+      end
+
 
       def equals?(rhs_)
         return false unless rhs_.kind_of?(::RGeo::Feature::Instance)

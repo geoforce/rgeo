@@ -69,6 +69,21 @@ module RGeo
         projection.is_simple?
       end
 
+      def is_valid?
+        projection.is_valid?
+      end
+
+      def is_valid_reason
+        projection.is_valid_reason
+      end
+
+      def is_valid_detail
+        result = projection.is_valid_detail
+        if result && result[:location]
+          result[:location] = RGeo::Feature.cast(result[:location], factory, :project=>true)
+        end
+        result
+      end
 
       def boundary
         boundary_ = projection.boundary

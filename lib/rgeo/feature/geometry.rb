@@ -90,7 +90,7 @@ module RGeo
     #
     # * <b>Objective equivalence</b> is the strongest form, indicating
     #   that the references refer to the same object. Of course, all
-    #   pairs of references with the same objective identity are also 
+    #   pairs of references with the same objective identity are also
     #   both representationally and spatially equivalent.
     #
     # Different methods test for different types of equivalence:
@@ -251,6 +251,36 @@ module RGeo
 
       def is_simple?
         raise Error::UnsupportedOperation, "Method Geometry#is_simple? not defined."
+      end
+
+      # === SFS 1.1 Description
+      #
+      # Tests the validity of this Geometry
+      #
+      # === Notes
+      #
+      # Returns a boolean value. Note that this is different from the SFS
+      # specification, which stipulates an integer return value.
+
+      def is_valid?
+        raise Error::UnsupportedOperation, "Method Geometry#is_valid? not defined."
+      end
+
+      # Returns a String describing whether or not the Geometry is valid.
+      def is_valid_reason
+        raise Error::UnsupportedOperation, "Method Geometry:is_valid_reason not defined"
+      end
+
+      # Returns a Hash containing the following structure on invalid geometries:
+      #
+      #   {
+      #     :detail => "String explaining the problem",
+      #     :location => Geos::Point # centered on the problem
+      #   }
+      #
+      # If the Geometry is valid, returns nil.
+      def is_valid_detail
+        raise Error::UnsupportedOperation, "Method Geometry::is_valid_detail not defined"
       end
 
 

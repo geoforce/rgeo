@@ -407,6 +407,66 @@ static VALUE method_geometry_is_simple(VALUE self)
   return result;
 }
 
+static VALUE method_geometry_is_valid(VALUE self)
+{
+  VALUE result;
+  RGeo_GeometryData* self_data;
+  const GEOSGeometry* self_geom;
+  char val;
+
+  result = Qnil;
+  self_data = RGEO_GEOMETRY_DATA_PTR(self);
+  self_geom = self_data->geom;
+  if (self_geom) {
+    val = GEOSisValid_r(self_data->geos_context, self_geom);
+    if (val == 0) {
+      result = Qfalse;
+    }
+    else if (val == 1) {
+      result = Qtrue;
+    }
+  }
+  return result;
+}
+
+static VALUE method_geometry_is_valid_reason(VALUE self)
+{
+  VALUE result;
+  RGeo_GeometryData* self_data;
+  const GEOSGeometry* self_geom;
+  char* str;
+
+  result = Qnil;
+  self_data = RGEO_GEOMETRY_DATA_PTR(self);
+  self_geom = self_data->geom;
+  if (self_geom) {
+    str = GEOSisValidReason_r(self_data->geos_context, self_geom);
+    result = rb_str_new2(str);
+  }
+  return result;
+}
+
+static VALUE method_geometry_is_valid_detail(VALUE self)
+{
+  VALUE result;
+  RGeo_GeometryData* self_data;
+  const GEOSGeometry* self_geom;
+  char valid;
+  char* detail;
+  const GEOSGeometry* location;
+
+  result = Qnil;
+  self_data = RGEO_GEOMETRY_DATA_PTR(self);
+  self_geom = self_data->geom;
+  valid = GEOSisValid_r(self_data->geos_context, self_geom);
+  if(self_geom && valid == 0) {
+    GEOSisValidDetail_r(self_data->geos_context, self_geom, 0, &detail, &location);
+    result = rb_hash_new();
+    rb_hash_aset(result, ID2SYM(rb_intern("detail")), rb_str_new2(detail));
+    rb_hash_aset(result, ID2SYM(rb_intern("location")), rgeo_wrap_geos_geometry(self_data->factory, location, Qnil));
+  }
+  return result;
+}
 
 static VALUE method_geometry_equals(VALUE self, VALUE rhs)
 {
@@ -987,6 +1047,9 @@ void rgeo_init_geos_geometry(RGeo_Globals* globals)
   rb_define_method(geos_geometry_methods, "as_binary", method_geometry_as_binary, 0);
   rb_define_method(geos_geometry_methods, "is_empty?", method_geometry_is_empty, 0);
   rb_define_method(geos_geometry_methods, "is_simple?", method_geometry_is_simple, 0);
+  rb_define_method(geos_geometry_methods, "is_valid?", method_geometry_is_valid, 0);
+  rb_define_method(geos_geometry_methods, "is_valid_reason", method_geometry_is_valid_reason, 0);
+  rb_define_method(geos_geometry_methods, "is_valid_detail", method_geometry_is_valid_detail, 0);
   rb_define_method(geos_geometry_methods, "equals?", method_geometry_equals, 1);
   rb_define_method(geos_geometry_methods, "==", method_geometry_equals, 1);
   rb_define_method(geos_geometry_methods, "rep_equals?", method_geometry_eql, 1);
